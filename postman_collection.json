@@ -1,0 +1,253 @@
+{
+    "info": {
+        "name": "Hospital SaaS API",
+        "description": "API collection for Hospital Management SaaS",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000/api/v1"
+        }
+    ],
+    "item": [
+        {
+            "name": "SuperAdmin",
+            "item": [
+                {
+                    "name": "SuperAdmin Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"superadmin@hospital.com\",\n  \"password\": \"superadmin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/superadmin/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "superadmin",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Subscription Plan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Enterprise Plan\",\n  \"description\": \"Full-featured plan for large hospitals\",\n  \"price\": 199.99,\n  \"currency\": \"USD\",\n  \"billingCycle\": \"monthly\",\n  \"maxUsers\": 100,\n  \"maxPatients\": 50000,\n  \"features\": {\n    \"modules\": [\"OPD\", \"IPD\", \"LAB\", \"PHARMACY\", \"RADIOLOGY\"],\n    \"analytics\": true,\n    \"support\": \"24/7\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/superadmin/subscription-plans",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "superadmin",
+                                "subscription-plans"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Subscription Plans",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/superadmin/subscription-plans",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "superadmin",
+                                "subscription-plans"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Hospitals",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/superadmin/hospitals",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "superadmin",
+                                "hospitals"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Dashboard Stats",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/superadmin/dashboard/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "superadmin",
+                                "dashboard",
+                                "stats"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Get Available Plans",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/plans",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "plans"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register Hospital",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"hospitalName\": \"City General Hospital\",\n  \"address\": \"123 Main Street\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"country\": \"USA\",\n  \"pincode\": \"10001\",\n  \"phone\": \"+1-555-0123\",\n  \"email\": \"info@citygeneral.com\",\n  \"website\": \"https://citygeneral.com\",\n  \"licenseNumber\": \"LIC12345\",\n  \"adminName\": \"Dr. John Smith\",\n  \"adminEmail\": \"admin@citygeneral.com\",\n  \"adminPhone\": \"+1-555-0124\",\n  \"adminPassword\": \"password123\",\n  \"planId\": \"basic-plan-id\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Hospital Admin Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@citygeneral.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Hospital Profile",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/hospital/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "hospital",
+                                "profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Purchase Subscription",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"planId\": \"standard-plan-id\",\n  \"duration\": 30\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/subscription/purchase",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "subscription",
+                                "purchase"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "{{baseUrl}}/health",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "health"
+                    ]
+                }
+            }
+        }
+    ]
+}

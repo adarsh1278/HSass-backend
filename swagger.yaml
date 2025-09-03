@@ -1,0 +1,818 @@
+openapi: 3.0.0
+info:
+  title: Hospital SaaS API
+  description: A comprehensive Hospital Management System SaaS API
+  version: 1.0.0
+  contact:
+    name: Hospital SaaS Team
+    email: support@hospital-saas.com
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+  - url: https://api.hospital-saas.com/v1
+    description: Production server
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health Check
+      summary: API Health Status
+      description: Check if the API is running
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Hospital SaaS API is running"
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /superadmin/login:
+    post:
+      tags:
+        - SuperAdmin
+      summary: SuperAdmin Login
+      description: Authenticate superadmin user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "superadmin@hospital.com"
+                password:
+                  type: string
+                  example: "superadmin123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /superadmin/subscription-plans:
+    get:
+      tags:
+        - SuperAdmin
+      summary: Get All Subscription Plans
+      description: Retrieve all subscription plans
+      responses:
+        '200':
+          description: Plans fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubscriptionPlan'
+                  message:
+                    type: string
+                    example: "Subscription plans fetched successfully"
+                  success:
+                    type: boolean
+                    example: true
+    
+    post:
+      tags:
+        - SuperAdmin
+      summary: Create Subscription Plan
+      description: Create a new subscription plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionPlan'
+      responses:
+        '201':
+          description: Plan created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: '#/components/schemas/SubscriptionPlan'
+                  message:
+                    type: string
+                    example: "Subscription plan created successfully"
+                  success:
+                    type: boolean
+                    example: true
+
+  /superadmin/subscription-plans/{id}:
+    put:
+      tags:
+        - SuperAdmin
+      summary: Update Subscription Plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriptionPlan'
+      responses:
+        '200':
+          description: Plan updated successfully
+    
+    delete:
+      tags:
+        - SuperAdmin
+      summary: Deactivate Subscription Plan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan deactivated successfully
+
+  /superadmin/hospitals:
+    get:
+      tags:
+        - SuperAdmin
+      summary: Get All Hospitals
+      description: Retrieve all registered hospitals
+      responses:
+        '200':
+          description: Hospitals fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HospitalWithStats'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+
+  /superadmin/dashboard/stats:
+    get:
+      tags:
+        - SuperAdmin
+      summary: Dashboard Statistics
+      description: Get system-wide statistics
+      responses:
+        '200':
+          description: Stats fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/DashboardStats'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+
+  /auth/plans:
+    get:
+      tags:
+        - Authentication
+      summary: Get Available Plans
+      description: Get all available subscription plans (public)
+      security: []
+      responses:
+        '200':
+          description: Plans fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubscriptionPlan'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register Hospital
+      description: Register a new hospital with admin user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HospitalRegistration'
+      responses:
+        '201':
+          description: Hospital registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: '#/components/schemas/RegistrationResponse'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Hospital Admin Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "admin@citygeneral.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+
+  /auth/subscription/purchase:
+    post:
+      tags:
+        - Authentication
+      summary: Purchase Subscription
+      description: Purchase or update hospital subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - planId
+              properties:
+                planId:
+                  type: string
+                  example: "standard-plan-id"
+                duration:
+                  type: integer
+                  example: 30
+                  description: Duration in days
+      responses:
+        '200':
+          description: Subscription updated successfully
+
+  /auth/hospital/profile:
+    get:
+      tags:
+        - Authentication
+      summary: Get Hospital Profile
+      responses:
+        '200':
+          description: Profile fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/HospitalProfile'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+    
+    put:
+      tags:
+        - Authentication
+      summary: Update Hospital Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHospitalProfile'
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      responses:
+        '200':
+          description: Logged out successfully
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Error message"
+
+    LoginResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            superAdmin:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                isActive:
+                  type: boolean
+                createdAt:
+                  type: string
+                  format: date-time
+            token:
+              type: string
+        message:
+          type: string
+          example: "Login successful"
+        success:
+          type: boolean
+          example: true
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: "Basic Plan"
+        description:
+          type: string
+          example: "Perfect for small clinics"
+        price:
+          type: number
+          format: float
+          example: 29.99
+        currency:
+          type: string
+          example: "USD"
+        billingCycle:
+          type: string
+          enum: [monthly, yearly]
+        maxUsers:
+          type: integer
+          example: 5
+        maxPatients:
+          type: integer
+          example: 500
+        features:
+          type: object
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateSubscriptionPlan:
+      type: object
+      required:
+        - name
+        - price
+        - features
+      properties:
+        name:
+          type: string
+          example: "Premium Plan"
+        description:
+          type: string
+          example: "Complete solution for large hospitals"
+        price:
+          type: number
+          format: float
+          example: 99.99
+        currency:
+          type: string
+          example: "USD"
+        billingCycle:
+          type: string
+          enum: [monthly, yearly]
+          example: "monthly"
+        maxUsers:
+          type: integer
+          example: 50
+        maxPatients:
+          type: integer
+          example: 10000
+        features:
+          type: object
+          example:
+            modules: ["OPD", "IPD", "LAB", "PHARMACY"]
+            analytics: true
+            support: "24/7"
+
+    UpdateSubscriptionPlan:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        features:
+          type: object
+
+    HospitalWithStats:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        subscription:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [ACTIVE, EXPIRED, CANCELLED, SUSPENDED]
+            plan:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+        _count:
+          type: object
+          properties:
+            users:
+              type: integer
+            patients:
+              type: integer
+
+    DashboardStats:
+      type: object
+      properties:
+        totalHospitals:
+          type: integer
+        activeHospitals:
+          type: integer
+        totalSubscriptions:
+          type: integer
+        activeSubscriptions:
+          type: integer
+        totalPlans:
+          type: integer
+
+    HospitalRegistration:
+      type: object
+      required:
+        - hospitalName
+        - adminName
+        - adminEmail
+        - adminPassword
+        - planId
+      properties:
+        hospitalName:
+          type: string
+          example: "City General Hospital"
+        address:
+          type: string
+          example: "123 Main Street"
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        country:
+          type: string
+          example: "USA"
+        pincode:
+          type: string
+          example: "10001"
+        phone:
+          type: string
+          example: "+1-555-0123"
+        email:
+          type: string
+          format: email
+          example: "info@citygeneral.com"
+        website:
+          type: string
+          format: uri
+          example: "https://citygeneral.com"
+        licenseNumber:
+          type: string
+          example: "LIC12345"
+        adminName:
+          type: string
+          example: "Dr. John Smith"
+        adminEmail:
+          type: string
+          format: email
+          example: "admin@citygeneral.com"
+        adminPhone:
+          type: string
+          example: "+1-555-0124"
+        adminPassword:
+          type: string
+          minLength: 6
+          example: "password123"
+        planId:
+          type: string
+          example: "basic-plan-id"
+
+    RegistrationResponse:
+      type: object
+      properties:
+        hospital:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            address:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            phone:
+              type: string
+            email:
+              type: string
+            isActive:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+        subscription:
+          type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+        admin:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+            isActive:
+              type: boolean
+        token:
+          type: string
+
+    UserLoginResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        data:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                hospitalId:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                  enum: [ADMIN, DOCTOR, NURSE, STAFF, LAB_TECH, PHARMACIST, RECEPTIONIST, ACCOUNTANT]
+                isActive:
+                  type: boolean
+                lastLoginAt:
+                  type: string
+                  format: date-time
+                hospital:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    subscription:
+                      type: object
+            token:
+              type: string
+        message:
+          type: string
+        success:
+          type: boolean
+
+    HospitalProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+        licenseNumber:
+          type: string
+        isActive:
+          type: boolean
+        subscription:
+          type: object
+          properties:
+            status:
+              type: string
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+            plan:
+              type: object
+        _count:
+          type: object
+          properties:
+            users:
+              type: integer
+            patients:
+              type: integer
+
+    UpdateHospitalProfile:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+
+tags:
+  - name: Health Check
+    description: API health monitoring
+  - name: SuperAdmin
+    description: Super administrator operations
+  - name: Authentication
+    description: Hospital and user authentication
