@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // API Routes
-app.use('/api/v1', routes);
+app.use('/test/api/v1', routes);
 
 // 404 handler
 app.all('*', (req, res, next) => {
